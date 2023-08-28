@@ -1,28 +1,4 @@
--- last_paid_click_attribution
-with sessions_with_paid_mark as (
-    select
-        *,
-        case
-            -- необходимо выделить все платные метки из данных
-            -- и здесь дополнить / убрать ненужное
-            when
-                medium in (
-                    'cpc',
-                    'cpm',
-                    'cpa',
-                    'youtube',
-                    'cpp',
-                    'tg',
-                    'referal',
-                    'social'
-                )
-                then 1
-            else 0
-        end as is_paid
-    from sessions
-),
-
-visitors_with_leads as (
+with visitors_with_leads as (
     select
         s.visitor_id,
         s.visit_date,
@@ -35,15 +11,20 @@ visitors_with_leads as (
         l.closing_reason,
         l.status_id,
         row_number() over (
-            partition by s.visitor_id order by s.is_paid desc, s.visit_date desc
+            partition by s.visitor_id
+            order by
+                case when s.medium = 'organic' then 0 else 1 end desc,
+                s.visit_date desc
         ) as rn
-    from sessions_with_paid_mark as s
+    from sessions as s
     left join leads as l
         on
-            l.visitor_id = s.visitor_id
-            and l.created_at >= s.visit_date
+            s.visitor_id = l.visitor_id
+            and s.visit_date <= l.created_at
 )
 
 select *
 from visitors_with_leads
-where rn = 1;
+where rn = 1
+order by amount desc nulls last
+limit 15;
