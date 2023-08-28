@@ -30,9 +30,7 @@ aggregated_data as (
         utm_campaign,
         date(visit_date) as visit_date,
         count(visitor_id) as visitors_count,
-        count(
-            case when created_at is not null then visitor_id end
-        ) as leads_count,
+        count(case when created_at is not null then visitor_id end) as leads_count,
         count(case when status_id = 142 then visitor_id end) as purchases_count,
         sum(case when status_id = 142 then amount end) as revenue
     from attribution
@@ -77,3 +75,5 @@ left join marketing_data as m
         and lower(a.utm_source) = m.utm_source
         and lower(a.utm_medium) = m.utm_medium
         and lower(a.utm_campaign) = m.utm_campaign
+order by purchases_count desc
+limit 15
