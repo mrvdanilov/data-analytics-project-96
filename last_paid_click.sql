@@ -27,4 +27,4 @@ select *
 from visitors_with_leads
 where rn = 1
 order by amount desc nulls last
-limit 15;
+limit 10;
