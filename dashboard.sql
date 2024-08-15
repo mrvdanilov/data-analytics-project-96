@@ -58,3 +58,11 @@ select
     ) as days_to_lead
 from attribution
 group by 1, 2
+
+
+
+
+
+
+
+
