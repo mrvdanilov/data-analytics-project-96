@@ -39,8 +39,8 @@ c AS (
 )
 
 SELECT
-    CAST(leed AS FLOAT) / click AS click_to_lead,
-    CAST(purch AS FLOAT) / leed AS lead_to_purchase
+    CAST(b.leed AS FLOAT) / a.click AS click_to_lead,
+    CAST(c.purch AS FLOAT) / b.leed AS lead_to_purchase
 FROM (SELECT COUNT(DISTINCT visitor_id) AS click FROM sessions) AS a
 CROSS JOIN b
 CROSS JOIN c;
@@ -181,3 +181,4 @@ LEFT JOIN leads AS l
     ON
         s.visitor_id = l.visitor_id
         AND s.visit_date <= l.created_at; -- Только лиды после визита
+
